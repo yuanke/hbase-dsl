@@ -60,9 +60,19 @@ public class SaveTest extends BaseTest {
 	@Test
 	public void saveWithTypes() throws IOException {
 		Date date = new Date();
-		hBase.save(TABLE).row("1234").family(FAM_A).col("int", 1234).col("boolean", true).col("date", date).col(
-				"double", 1234.1234).col("float", 1234.1234f).col("short", (short) 1234).col("string", "1234").col(
-				"bigint", new BigInteger("1234")).col("bigdec", new BigDecimal("1234.1234")).col("long", 1234l);
+		hBase.save(TABLE).row("1234").
+			family(FAM_A).
+				col("int", 1234).
+				col("boolean", true).
+				col("date", date).
+				col("double", 1234.1234).
+				col("float", 1234.1234f).
+				col("short", (short) 1234).
+				col("string", "1234").
+				col("bigint", new BigInteger("1234")).
+				col("bigdec", new BigDecimal("1234.1234")).
+				col("long", 1234l).
+				col("bytearray", new byte[]{1,2,3,4});
 
 		hBase.flush();
 
@@ -82,21 +92,6 @@ public class SaveTest extends BaseTest {
 		assertArrayEquals(Bytes.toBytes(new BigDecimal("1234.1234").toPlainString()), familyMapA.get(Bytes
 				.toBytes("bigdec")));
 		assertArrayEquals(Bytes.toBytes(1234l), familyMapA.get(Bytes.toBytes("long")));
+		assertArrayEquals(new byte[]{1,2,3,4}, familyMapA.get(Bytes.toBytes("bytearray")));
 	}
-
-	// @Test public void saveIterable() {
-	// hBase.save(TABLE).rows(getSimpleValueObjects(), new
-	// ForEach<SimpleValueObject>() {
-	// @Override
-	// public void process(SimpleValueObject simpleValueObject) {
-	//				
-	// }
-	// });
-	// }
-	//
-	// private Iterable<SimpleValueObject> getSimpleValueObjects() {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
-
 }

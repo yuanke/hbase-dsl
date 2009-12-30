@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import com.nearinfinity.hbase.dsl.types.BigDecimalConverter;
 import com.nearinfinity.hbase.dsl.types.BigIntegerConverter;
 import com.nearinfinity.hbase.dsl.types.BooleanConverter;
+import com.nearinfinity.hbase.dsl.types.ByteArrayConverter;
 import com.nearinfinity.hbase.dsl.types.DateConverter;
 import com.nearinfinity.hbase.dsl.types.DoubleConverter;
 import com.nearinfinity.hbase.dsl.types.FloatConverter;
@@ -64,6 +65,7 @@ public class TypeDriver {
 		registerType(new LongConverter());
 		registerType(new ShortConverter());
 		registerType(new DateConverter());
+		registerType(new ByteArrayConverter());
 		return this;
 	}
 
