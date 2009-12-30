@@ -1,2 +1,3 @@
-<b>hbase-dsl</b> README
+Hbase-dsl is meant to help ease the pain of writing code for Hbase.  Think of it as the JDBCTemplate for Hbase, because that what I intend for this project to be.
 
+Please read the wiki page for details.
