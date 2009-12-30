@@ -46,13 +46,13 @@ import com.nearinfinity.hbase.dsl.types.TypeConverter;
  * 
  * @author Aaron McCurry
  * 
- * @param <T>
+ * @param <QUERY_OP_TYPE>
  *            QueryOperator Type, allows users to extend QueryOperatorDelegate
  *            and add their own methods.
- * @param <I>
+ * @param <ROW_ID_TYPE>
  *            Type of the Row id (String, Integer, Long, etc.).
  */
-public class HBase<T extends QueryOps<I>, I> {
+public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 
 	private static final Log LOG = LogFactory.getLog(HBase.class);
 	private static final int MAX_QUEUE_SIZE = 1024;
@@ -62,9 +62,9 @@ public class HBase<T extends QueryOps<I>, I> {
 	private HTablePool pool = new HTablePool(conf, 16);
 	private Class<?> whereClauseType;
 	private TypeDriver typeDriver = new TypeDriver().registerAllKnownTypes();
-	private Class<I> idType;
+	private Class<ROW_ID_TYPE> idType;
 
-	public HBase(Class<? extends QueryOps<I>> whereClauseType, Class<I> idType) {
+	public HBase(Class<? extends QueryOps<ROW_ID_TYPE>> whereClauseType, Class<ROW_ID_TYPE> idType) {
 		this.whereClauseType = whereClauseType;
 		this.idType = idType;
 		setupAutoFlushOnShutdown();
@@ -115,24 +115,24 @@ public class HBase<T extends QueryOps<I>, I> {
 	 *            the table name.
 	 */
 	public void truncateTable(final String tableName) {
-		scan(tableName).foreach(new ForEach<Row<I>>() {
+		scan(tableName).foreach(new ForEach<Row<ROW_ID_TYPE>>() {
 			@Override
-			public void process(Row<I> row) {
+			public void process(Row<ROW_ID_TYPE> row) {
 				delete(tableName).row(row.getId());
 			}
 		});
 		flush(Bytes.toBytes(tableName));
 	}
 
-	public SaveRow<T, I> save(String tableName) {
+	public SaveRow<QUERY_OP_TYPE, ROW_ID_TYPE> save(String tableName) {
 		LOG.debug("save [" + tableName + "]");
-		return new SaveRow<T, I>(this, tableName);
+		return new SaveRow<QUERY_OP_TYPE, ROW_ID_TYPE>(this, tableName);
 	}
 
-	public FetchRow<I> fetch(String tableName) {
+	public FetchRow<ROW_ID_TYPE> fetch(String tableName) {
 		flush();
 		LOG.debug("fetch [" + tableName + "]");
-		return new FetchRow<I>(this, tableName);
+		return new FetchRow<ROW_ID_TYPE>(this, tableName);
 	}
 
 	public TableAdmin defineTable(String tableName) {
@@ -148,7 +148,7 @@ public class HBase<T extends QueryOps<I>, I> {
 	 *            the table name.
 	 * @return the {@link Scanner}.
 	 */
-	public Scanner<T, I> scan(String tableName) {
+	public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(String tableName) {
 		return scan(tableName, null);
 	}
 
@@ -161,7 +161,7 @@ public class HBase<T extends QueryOps<I>, I> {
 	 *            the starting id.
 	 * @return the {@link Scanner}.
 	 */
-	public Scanner<T, I> scan(String tableName, I startId) {
+	public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(String tableName, ROW_ID_TYPE startId) {
 		return scan(tableName, startId, null);
 	}
 
@@ -177,12 +177,12 @@ public class HBase<T extends QueryOps<I>, I> {
 	 *            the ending id.
 	 * @return the {@link Scanner}.
 	 */
-	public Scanner<T, I> scan(String tableName, I startId, I endId) {
+	public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(String tableName, ROW_ID_TYPE startId, ROW_ID_TYPE endId) {
 		flush();
 		LOG.debug("scan [" + tableName + "] startId [" + startId + "] endId [" + endId + "]");
 		try {
 			HTable hTable = new HTable(conf, Bytes.toBytes(tableName));
-			return new Scanner<T, I>(this, hTable, startId, endId);
+			return new Scanner<QUERY_OP_TYPE, ROW_ID_TYPE>(this, hTable, startId, endId);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -236,9 +236,9 @@ public class HBase<T extends QueryOps<I>, I> {
 	 *            the table name.
 	 * @return the {@link DeletedRow}.
 	 */
-	public DeletedRow<T, I> delete(String tableName) {
+	public DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE> delete(String tableName) {
 		LOG.debug("delete [" + tableName + "]");
-		return new DeletedRow<T, I>(this, Bytes.toBytes(tableName));
+		return new DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE>(this, Bytes.toBytes(tableName));
 	}
 
 	/**
@@ -253,36 +253,36 @@ public class HBase<T extends QueryOps<I>, I> {
 		typeDriver.registerType(typeConverter);
 	}
 
-	public Table<T, I> table(final String tableName) {
-		return new Table<T,I>() {
+	public Table<QUERY_OP_TYPE, ROW_ID_TYPE> table(final String tableName) {
+		return new Table<QUERY_OP_TYPE,ROW_ID_TYPE>() {
 
 			@Override
-			public DeletedRow<T, I> delete() {
+			public DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE> delete() {
 				return HBase.this.delete(tableName);
 			}
 
 			@Override
-			public FetchRow<I> fetch() {
+			public FetchRow<ROW_ID_TYPE> fetch() {
 				return HBase.this.fetch(tableName);
 			}
 
 			@Override
-			public SaveRow<T, I> save() {
+			public SaveRow<QUERY_OP_TYPE, ROW_ID_TYPE> save() {
 				return HBase.this.save(tableName);
 			}
 
 			@Override
-			public Scanner<T, I> scan() {
+			public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan() {
 				return HBase.this.scan(tableName);
 			}
 
 			@Override
-			public Scanner<T, I> scan(I startId) {
+			public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(ROW_ID_TYPE startId) {
 				return HBase.this.scan(tableName, startId);
 			}
 
 			@Override
-			public Scanner<T, I> scan(I startId, I endId) {
+			public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(ROW_ID_TYPE startId, ROW_ID_TYPE endId) {
 				return HBase.this.scan(tableName, startId, endId);
 			}
 		};
@@ -300,8 +300,8 @@ public class HBase<T extends QueryOps<I>, I> {
 		}
 	}
 
-	protected Row<I> convert(Result result) {
-		return new ResultRow<I>(this, result);
+	protected Row<ROW_ID_TYPE> convert(Result result) {
+		return new ResultRow<ROW_ID_TYPE>(this, result);
 	}
 
 	protected void savePut(byte[] tableName, Put put) {
@@ -335,11 +335,11 @@ public class HBase<T extends QueryOps<I>, I> {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected QueryOps<I> createWhereClause(Where<? extends QueryOps<I>, I> whereScanner, byte[] family, byte[] value) {
+	protected QueryOps<ROW_ID_TYPE> createWhereClause(Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> whereScanner, byte[] family, byte[] value) {
 		try {
 			Constructor<?> constructor = this.whereClauseType.getConstructor(new Class[] { Where.class, byte[].class,
 					byte[].class });
-			return (QueryOps<I>) constructor.newInstance(whereScanner, family, value);
+			return (QueryOps<ROW_ID_TYPE>) constructor.newInstance(whereScanner, family, value);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -356,8 +356,8 @@ public class HBase<T extends QueryOps<I>, I> {
 		}
 	}
 
-	protected Class<I> getIdType() {
-		return (Class<I>) idType;
+	protected Class<ROW_ID_TYPE> getIdType() {
+		return (Class<ROW_ID_TYPE>) idType;
 	}
 
 	private Queue<Delete> getDeletes(byte[] tableName) {

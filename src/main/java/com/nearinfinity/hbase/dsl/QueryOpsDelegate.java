@@ -23,93 +23,93 @@ import java.util.Collection;
  * 
  * @author Aaron McCurry
  * 
- * @param <T>
- * @param <I>
+ * @param <QUERY_OP_TYPE>
+ * @param <ROW_ID_TYPE>
  */
 @SuppressWarnings("unchecked")
-public class QueryOpsDelegate<T extends QueryOps<I>, I> extends QueryOps<I> {
+public class QueryOpsDelegate<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> extends QueryOps<ROW_ID_TYPE> {
 
-	public QueryOpsDelegate(Where<T, I> whereScanner, byte[] family, byte[] qualifier) {
+	public QueryOpsDelegate(Where<QUERY_OP_TYPE, ROW_ID_TYPE> whereScanner, byte[] family, byte[] qualifier) {
 		super(whereScanner, family, qualifier);
 	}
 
 	@Override
-	public <U> Where<T, I> betweenEx(U s, U e) {
-		return (Where<T, I>) super.betweenEx(s, e);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> betweenEx(U s, U e) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.betweenEx(s, e);
 	}
 
 	@Override
-	public <U> Where<T, I> betweenIn(U s, U e) {
-		return (Where<T, I>) super.betweenIn(s, e);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> betweenIn(U s, U e) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.betweenIn(s, e);
 	}
 
 	@Override
-	public <U> Where<T, I> eq(Collection<U> col) {
-		return (Where<T, I>) super.eq(col);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> eq(Collection<U> col) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.eq(col);
 	}
 
 	@Override
-	public <U> Where<T, I> eq(U... objs) {
-		return (Where<T, I>) super.eq(objs);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> eq(U... objs) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.eq(objs);
 	}
 
 	@Override
-	public <U> Where<T, I> gt(Collection<U> col) {
-		return (Where<T, I>) super.gt(col);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> gt(Collection<U> col) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.gt(col);
 	}
 
 	@Override
-	public <U> Where<T, I> gt(U... objs) {
-		return (Where<T, I>) super.gt(objs);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> gt(U... objs) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.gt(objs);
 	}
 
 	@Override
-	public <U> Where<T, I> gte(Collection<U> col) {
-		return (Where<T, I>) super.gte(col);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> gte(Collection<U> col) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.gte(col);
 	}
 
 	@Override
-	public <U> Where<T, I> gte(U... objs) {
-		return (Where<T, I>) super.gte(objs);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> gte(U... objs) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.gte(objs);
 	}
 
 	@Override
-	public <U> Where<T, I> lt(Collection<U> col) {
-		return (Where<T, I>) super.lt(col);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> lt(Collection<U> col) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.lt(col);
 	}
 
 	@Override
-	public <U> Where<T, I> lt(U... objs) {
-		return (Where<T, I>) super.lt(objs);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> lt(U... objs) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.lt(objs);
 	}
 
 	@Override
-	public <U> Where<T, I> lte(Collection<U> col) {
-		return (Where<T, I>) super.lte(col);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> lte(Collection<U> col) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.lte(col);
 	}
 
 	@Override
-	public <U> Where<T, I> lte(U... objs) {
-		return (Where<T, I>) super.lte(objs);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> lte(U... objs) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.lte(objs);
 	}
 
 	@Override
-	public <U> Where<T, I> contains(String pattern) {
-		return (Where<T, I>) super.contains(pattern);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> contains(String pattern) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.contains(pattern);
 	}
 
 	@Override
-	public Where<T, I> match(String pattern) {
-		return (Where<T, I>) super.match(pattern);
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> match(String pattern) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.match(pattern);
 	}
 
 	@Override
-	public <U> Where<T, I> ne(Collection<U> col) {
-		return (Where<T, I>) super.ne(col);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> ne(Collection<U> col) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.ne(col);
 	}
 
 	@Override
-	public <U> Where<T, I> ne(U... objs) {
-		return (Where<T, I>) super.ne(objs);
+	public <U> Where<QUERY_OP_TYPE, ROW_ID_TYPE> ne(U... objs) {
+		return (Where<QUERY_OP_TYPE, ROW_ID_TYPE>) super.ne(objs);
 	}
 }

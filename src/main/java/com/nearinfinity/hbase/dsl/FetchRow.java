@@ -30,42 +30,42 @@ import org.apache.hadoop.hbase.util.Bytes;
  * 
  * @author Aaron McCurry
  * 
- * @param <I>
+ * @param <ROW_ID_TYPE>
  */
-public class FetchRow<I> {
+public class FetchRow<ROW_ID_TYPE> {
 
 	private static final Log LOG = LogFactory.getLog(FetchRow.class);
 	private byte[] currentFamily;
 	private Get get = new Get();
 	private byte[] tableName;
-	private HBase<? extends QueryOps<I>, I> hBase;
+	private HBase<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> hBase;
 	private Result result;
 
-	FetchRow(HBase<? extends QueryOps<I>, I> hBase, String tableName) {
+	FetchRow(HBase<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> hBase, String tableName) {
 		this.hBase = hBase;
 		this.tableName = Bytes.toBytes(tableName);
 	}
 
-	public Row<I> row(I id) {
+	public Row<ROW_ID_TYPE> row(ROW_ID_TYPE id) {
 		get = newGet(id);
 		fetch();
 		if (result.getRow() == null) {
 			return null;
 		}
-		return new ResultRow<I>(hBase, result);
+		return new ResultRow<ROW_ID_TYPE>(hBase, result);
 	}
 
-	public FetchRow<I> select() {
+	public FetchRow<ROW_ID_TYPE> select() {
 		return this;
 	}
 
-	public FetchRow<I> family(String family) {
+	public FetchRow<ROW_ID_TYPE> family(String family) {
 		currentFamily = Bytes.toBytes(family);
 		get.addFamily(currentFamily);
 		return this;
 	}
 
-	public FetchRow<I> col(String name) {
+	public FetchRow<ROW_ID_TYPE> col(String name) {
 		get.addColumn(currentFamily, Bytes.toBytes(name));
 		return this;
 	}
@@ -77,7 +77,7 @@ public class FetchRow<I> {
 		}
 	}
 
-	private Get newGet(I id) {
+	private Get newGet(ROW_ID_TYPE id) {
 		Get newGet = new Get(hBase.toBytes(id));
 		Map<byte[], NavigableSet<byte[]>> familyMap = get.getFamilyMap();
 		for (byte[] family : familyMap.keySet()) {

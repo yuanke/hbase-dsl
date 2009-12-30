@@ -25,13 +25,13 @@ import java.util.NavigableMap;
  * 
  * @author Aaron McCurry
  */
-public interface Row<I> {
+public interface Row<ROW_ID_TYPE> {
 	/**
 	 * Gets the id of the current row.
 	 * 
 	 * @return
 	 */
-	I getId();
+	ROW_ID_TYPE getId();
 
 	/**
 	 * Gets the family from the current row.

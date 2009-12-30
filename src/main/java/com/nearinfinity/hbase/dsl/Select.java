@@ -26,63 +26,63 @@ import org.apache.hadoop.hbase.util.Bytes;
  * 
  * @author Aaron McCurry
  * 
- * @param <T>
- * @param <I>
+ * @param <QUERY_OP_TYPE>
+ * @param <ROW_ID_TYPE>
  */
-public class Select<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
+public class Select<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> implements Iterable<Row<ROW_ID_TYPE>> {
 
 	private byte[] family;
-	private Scanner<T, I> scanner;
+	private Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scanner;
 
-	Select(Scanner<T, I> scanner) {
+	Select(Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scanner) {
 		this.scanner = scanner;
 	}
 
-	public Where<T, I> where() {
-		return new Where<T, I>(scanner);
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> where() {
+		return new Where<QUERY_OP_TYPE, ROW_ID_TYPE>(scanner);
 	}
 
-	public void foreach(ForEach<Row<I>> forEach) {
+	public void foreach(ForEach<Row<ROW_ID_TYPE>> forEach) {
 		scanner.foreach(forEach);
 	}
 
-	public Select<T, I> family(String name) {
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> family(String name) {
 		family = Bytes.toBytes(name);
 		scanner.addFamily(family);
 		return this;
 	}
 
-	public Select<T, I> col(String name) {
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> col(String name) {
 		scanner.addColumn(family, Bytes.toBytes(name));
 		return this;
 	}
 
 	@Override
-	public Iterator<Row<I>> iterator() {
+	public Iterator<Row<ROW_ID_TYPE>> iterator() {
 		return scanner.iterator();
 	}
 
-	public Select<T, I> timestamp(long timestamp) {
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> timestamp(long timestamp) {
 		scanner.setTimestamp(timestamp);
 		return this;
 	}
 
-	public Select<T, I> timerange(long minTimestamp, long maxTimestamp) {
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> timerange(long minTimestamp, long maxTimestamp) {
 		scanner.setTimeRange(minTimestamp, maxTimestamp);
 		return this;
 	}
 
-	public Select<T, I> timestamp(Date timestamp) {
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> timestamp(Date timestamp) {
 		scanner.setTimestamp(timestamp.getTime());
 		return this;
 	}
 
-	public Select<T, I> timerange(Date minTimestamp, Date maxTimestamp) {
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> timerange(Date minTimestamp, Date maxTimestamp) {
 		scanner.setTimeRange(minTimestamp.getTime(), maxTimestamp.getTime());
 		return this;
 	}
 
-	public Select<T, I> allVersions() {
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> allVersions() {
 		scanner.allVersions();
 		return this;
 	}

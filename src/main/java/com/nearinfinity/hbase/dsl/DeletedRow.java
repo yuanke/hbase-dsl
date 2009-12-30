@@ -26,15 +26,15 @@ import org.apache.hadoop.hbase.util.Bytes;
  * 
  * @author Aaron McCurry
  * 
- * @param <T>
+ * @param <QUERY_OP_TYPE>
  *            QueryOperator Type, allows users to extend QueryOperatorDelegate
  *            and add their own methods.
- * @param <I>
+ * @param <ROW_ID_TYPE>
  *            Type of the Row id (String, Integer, Long, etc.).
  */
-public class DeletedRow<T extends QueryOps<I>, I> {
+public class DeletedRow<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 
-	private HBase<T, I> hBase;
+	private HBase<QUERY_OP_TYPE, ROW_ID_TYPE> hBase;
 	private byte[] tableName;
 
 	/**
@@ -45,7 +45,7 @@ public class DeletedRow<T extends QueryOps<I>, I> {
 	 * @param tableName
 	 *            the table name.
 	 */
-	DeletedRow(HBase<T, I> hBase, byte[] tableName) {
+	DeletedRow(HBase<QUERY_OP_TYPE, ROW_ID_TYPE> hBase, byte[] tableName) {
 		this.hBase = hBase;
 		this.tableName = tableName;
 	}
@@ -58,8 +58,8 @@ public class DeletedRow<T extends QueryOps<I>, I> {
 	 *            delete.
 	 * @return the {@link DeletedRowFamily}.
 	 */
-	public DeletedRowFamily<T, I> row(I id) {
-		return new DeletedRowFamily<T, I>(tableName, id, this, hBase);
+	public DeletedRowFamily<QUERY_OP_TYPE, ROW_ID_TYPE> row(ROW_ID_TYPE id) {
+		return new DeletedRowFamily<QUERY_OP_TYPE, ROW_ID_TYPE>(tableName, id, this, hBase);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class DeletedRow<T extends QueryOps<I>, I> {
 	 *            the {@link Iterable} of the id(s).
 	 * @return this object.
 	 */
-	public DeletedRow<T, I> rows(Iterable<I> it) {
+	public DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE> rows(Iterable<ROW_ID_TYPE> it) {
 		return rows(it, null);
 	}
 
@@ -84,9 +84,9 @@ public class DeletedRow<T extends QueryOps<I>, I> {
 	 *            and columns.
 	 * @return this object.
 	 */
-	public DeletedRow<T, I> rows(Iterable<I> it, ForEach<DeletedRowFamily<T, I>> forEach) {
-		for (I id : it) {
-			DeletedRowFamily<T, I> deleteRowFamily = row(id);
+	public DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE> rows(Iterable<ROW_ID_TYPE> it, ForEach<DeletedRowFamily<QUERY_OP_TYPE, ROW_ID_TYPE>> forEach) {
+		for (ROW_ID_TYPE id : it) {
+			DeletedRowFamily<QUERY_OP_TYPE, ROW_ID_TYPE> deleteRowFamily = row(id);
 			if (forEach != null) {
 				forEach.process(deleteRowFamily);
 			}

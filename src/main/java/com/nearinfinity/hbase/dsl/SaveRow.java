@@ -26,27 +26,27 @@ import org.apache.hadoop.hbase.util.Bytes;
  * 
  * @author Aaron McCurry
  * 
- * @param <T>
+ * @param <QUERY_OP_TYPE>
  *            QueryOperator Type, allows users to extend QueryOperatorDelegate
  *            and add their own methods.
- * @param <I>
+ * @param <ROW_ID_TYPE>
  *            Type of the Row id (String, Integer, Long, etc.).
  */
-public class SaveRow<T extends QueryOps<I>, I> {
+public class SaveRow<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 
-	private HBase<T, I> hBase;
+	private HBase<QUERY_OP_TYPE, ROW_ID_TYPE> hBase;
 	private byte[] tableName;
 
-	SaveRow(HBase<T, I> hBase, String tableName) {
+	SaveRow(HBase<QUERY_OP_TYPE, ROW_ID_TYPE> hBase, String tableName) {
 		this.hBase = hBase;
 		this.tableName = Bytes.toBytes(tableName);
 	}
 
-	public SaveFamilyCol<T, I> row(I id) {
-		return new SaveFamilyCol<T, I>(tableName, id, this, hBase);
+	public SaveFamilyCol<QUERY_OP_TYPE, ROW_ID_TYPE> row(ROW_ID_TYPE id) {
+		return new SaveFamilyCol<QUERY_OP_TYPE, ROW_ID_TYPE>(tableName, id, this, hBase);
 	}
 
-	public <U> SaveRow<T, I> rows(Iterable<U> it, ForEach<U> process) {
+	public <U> SaveRow<QUERY_OP_TYPE, ROW_ID_TYPE> rows(Iterable<U> it, ForEach<U> process) {
 		for (U u : it) {
 			process.process(u);
 		}

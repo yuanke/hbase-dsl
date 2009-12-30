@@ -30,19 +30,19 @@ import org.apache.hadoop.hbase.filter.Filter;
  * 
  * @author Aaron McCurry
  * 
- * @param <T>
+ * @param <QUERY_OP_TYPE>
  *            QueryOperator Type, allows users to extend QueryOperatorDelegate
  *            and add their own methods.
- * @param <I>
+ * @param <ROW_ID_TYPE>
  *            Type of the Row id (String, Integer, Long, etc.).
  */
-public class Scanner<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
+public class Scanner<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> implements Iterable<Row<ROW_ID_TYPE>> {
 
 	private HTable hTable;
 	private Scan scan;
-	private HBase<T, I> hBase;
+	private HBase<QUERY_OP_TYPE, ROW_ID_TYPE> hBase;
 
-	Scanner(HBase<T, I> hBase, HTable hTable, I startId, I endId) {
+	Scanner(HBase<QUERY_OP_TYPE, ROW_ID_TYPE> hBase, HTable hTable, ROW_ID_TYPE startId, ROW_ID_TYPE endId) {
 		this.hTable = hTable;
 		this.hBase = hBase;
 		if (startId != null && endId != null) {
@@ -55,18 +55,18 @@ public class Scanner<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 	}
 
 	@Override
-	public Iterator<Row<I>> iterator() {
+	public Iterator<Row<ROW_ID_TYPE>> iterator() {
 		try {
 			ResultScanner scanner = hTable.getScanner(scan);
 			final Iterator<Result> iterator = scanner.iterator();
-			return new Iterator<Row<I>>() {
+			return new Iterator<Row<ROW_ID_TYPE>>() {
 				@Override
 				public boolean hasNext() {
 					return iterator.hasNext();
 				}
 
 				@Override
-				public Row<I> next() {
+				public Row<ROW_ID_TYPE> next() {
 					return hBase.convert(iterator.next());
 				}
 
@@ -87,14 +87,14 @@ public class Scanner<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 	 * @param forEach
 	 *            the {@link ForEach} object provided to perform the processing.
 	 */
-	public void foreach(ForEach<Row<I>> forEach) {
-		for (Row<I> row : this) {
+	public void foreach(ForEach<Row<ROW_ID_TYPE>> forEach) {
+		for (Row<ROW_ID_TYPE> row : this) {
 			forEach.process(row);
 		}
 	}
 
-	public Where<T, I> where() {
-		return new Where<T, I>(this);
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> where() {
+		return new Where<QUERY_OP_TYPE, ROW_ID_TYPE>(this);
 	}
 
 	protected void setFilter(Filter filter) {
@@ -105,12 +105,12 @@ public class Scanner<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 		return hBase.toBytes(o);
 	}
 
-	protected QueryOps<I> createWhereClause(Where<? extends QueryOps<I>, I> whereScanner, byte[] family, byte[] value) {
+	protected QueryOps<ROW_ID_TYPE> createWhereClause(Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> whereScanner, byte[] family, byte[] value) {
 		return hBase.createWhereClause(whereScanner, family, value);
 	}
 
-	public Select<T, I> select() {
-		return new Select<T, I>(this);
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> select() {
+		return new Select<QUERY_OP_TYPE, ROW_ID_TYPE>(this);
 	}
 
 	protected void addFamily(byte[] family) {

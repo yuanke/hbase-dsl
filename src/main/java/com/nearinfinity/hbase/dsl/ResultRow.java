@@ -29,15 +29,15 @@ import org.apache.hadoop.hbase.util.Bytes;
  * 
  * @author Aaron McCurry
  * 
- * @param <I>
+ * @param <ROW_ID_TYPE>
  */
-public class ResultRow<I> implements Row<I> {
+public class ResultRow<ROW_ID_TYPE> implements Row<ROW_ID_TYPE> {
 
 	private Result result;
 	private byte[] id;
-	private HBase<? extends QueryOps<I>, I> hBase;
+	private HBase<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> hBase;
 
-	public ResultRow(HBase<? extends QueryOps<I>, I> hBase, Result result) {
+	public ResultRow(HBase<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> hBase, Result result) {
 		this.hBase = hBase;
 		this.result = result;
 		this.id = result.getRow();
@@ -56,7 +56,7 @@ public class ResultRow<I> implements Row<I> {
 	}
 
 	@Override
-	public I getId() {
+	public ROW_ID_TYPE getId() {
 		return hBase.fromBytes(id, hBase.getIdType());
 	}
 

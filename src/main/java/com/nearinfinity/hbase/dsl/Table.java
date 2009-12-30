@@ -1,16 +1,16 @@
 package com.nearinfinity.hbase.dsl;
 
-public interface Table<T extends QueryOps<I>, I> {
+public interface Table<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 
-	SaveRow<T, I> save();
+	SaveRow<QUERY_OP_TYPE, ROW_ID_TYPE> save();
 
-	FetchRow<I> fetch();
+	FetchRow<ROW_ID_TYPE> fetch();
 
-	Scanner<T, I> scan();
+	Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan();
 
-	Scanner<T, I> scan(I startId);
+	Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(ROW_ID_TYPE startId);
 
-	Scanner<T, I> scan(I startId, I endId);
+	Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(ROW_ID_TYPE startId, ROW_ID_TYPE endId);
 
-	DeletedRow<T, I> delete();
+	DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE> delete();
 }

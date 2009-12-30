@@ -34,49 +34,49 @@ import org.apache.hadoop.hbase.filter.FilterList.Operator;
  * 
  * @author Aaron McCurry
  * 
- * @param <I>
+ * @param <ROW_ID_TYPE>
  */
-public class QueryOps<I> {
+public class QueryOps<ROW_ID_TYPE> {
 
-	protected Where<? extends QueryOps<I>, I> whereScanner;
+	protected Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> whereScanner;
 	protected byte[] qualifier;
 	protected byte[] family;
 
-	public QueryOps(Where<? extends QueryOps<I>, I> whereScanner, byte[] family, byte[] qualifier) {
+	public QueryOps(Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> whereScanner, byte[] family, byte[] qualifier) {
 		this.whereScanner = whereScanner;
 		this.family = family;
 		this.qualifier = qualifier;
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> eq(U... objs) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> eq(U... objs) {
 		return objs == null ? whereScanner : eq(Arrays.asList(objs));
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> eq(Collection<U> col) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> eq(Collection<U> col) {
 		return getCommonFilter(col, CompareOp.EQUAL, true);
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> ne(Collection<U> col) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> ne(Collection<U> col) {
 		return getCommonFilter(col, CompareOp.NOT_EQUAL, false);
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> lt(Collection<U> col) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> lt(Collection<U> col) {
 		return getCommonFilter(col, CompareOp.LESS, true);
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> gt(Collection<U> col) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> gt(Collection<U> col) {
 		return getCommonFilter(col, CompareOp.GREATER, true);
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> lte(Collection<U> col) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> lte(Collection<U> col) {
 		return getCommonFilter(col, CompareOp.LESS_OR_EQUAL, true);
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> gte(Collection<U> col) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> gte(Collection<U> col) {
 		return getCommonFilter(col, CompareOp.GREATER_OR_EQUAL, true);
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> contains(String pattern) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> contains(String pattern) {
 		SubstringComparator comparator = new SubstringComparator(pattern);
 		SingleColumnValueFilter singleColumnValueFilter = new SingleColumnValueFilter(family, qualifier,
 				CompareOp.EQUAL, comparator);
@@ -84,7 +84,7 @@ public class QueryOps<I> {
 		return whereScanner.addFilter(singleColumnValueFilter);
 	}
 
-	public Where<? extends QueryOps<I>, I> match(String regexPattern) {
+	public Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> match(String regexPattern) {
 		RegexStringComparator regexStringComparator = new RegexStringComparator(regexPattern);
 		SingleColumnValueFilter singleColumnValueFilter = new SingleColumnValueFilter(family, qualifier,
 				CompareOp.EQUAL, regexStringComparator);
@@ -92,35 +92,35 @@ public class QueryOps<I> {
 		return whereScanner.addFilter(singleColumnValueFilter);
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> betweenIn(U s, U e) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> betweenIn(U s, U e) {
 		Filter leftFilter = getSingleValueEqualFilter(whereScanner.toBytes(s), CompareOp.GREATER_OR_EQUAL, true);
 		Filter rightFilter = getSingleValueEqualFilter(whereScanner.toBytes(e), CompareOp.LESS_OR_EQUAL, true);
 		return whereScanner.addFilter(new FilterList(Operator.MUST_PASS_ALL, Arrays.asList(leftFilter, rightFilter)));
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> betweenEx(U s, U e) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> betweenEx(U s, U e) {
 		Filter leftFilter = getSingleValueEqualFilter(whereScanner.toBytes(s), CompareOp.GREATER, true);
 		Filter rightFilter = getSingleValueEqualFilter(whereScanner.toBytes(e), CompareOp.LESS, true);
 		return whereScanner.addFilter(new FilterList(Operator.MUST_PASS_ALL, Arrays.asList(leftFilter, rightFilter)));
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> ne(U... objs) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> ne(U... objs) {
 		return objs == null ? whereScanner : ne(Arrays.asList(objs));
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> lt(U... objs) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> lt(U... objs) {
 		return objs == null ? whereScanner : lt(Arrays.asList(objs));
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> gt(U... objs) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> gt(U... objs) {
 		return objs == null ? whereScanner : gt(Arrays.asList(objs));
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> lte(U... objs) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> lte(U... objs) {
 		return objs == null ? whereScanner : lte(Arrays.asList(objs));
 	}
 
-	public <U> Where<? extends QueryOps<I>, I> gte(U... objs) {
+	public <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> gte(U... objs) {
 		return objs == null ? whereScanner : gte(Arrays.asList(objs));
 	}
 
@@ -131,7 +131,7 @@ public class QueryOps<I> {
 		return singleColumnValueFilter;
 	}
 
-	protected <U> Where<? extends QueryOps<I>, I> getCommonFilter(Collection<U> col, CompareOp compareOp,
+	protected <U> Where<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> getCommonFilter(Collection<U> col, CompareOp compareOp,
 			boolean filterIfMissing) {
 		if (col == null || col.size() == 0) {
 			return whereScanner;

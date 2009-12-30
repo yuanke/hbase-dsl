@@ -27,34 +27,34 @@ import org.apache.hadoop.hbase.util.Bytes;
  * 
  * @author Aaron McCurry
  * 
- * @param <T>
+ * @param <QUERY_OP_TYPE>
  *            QueryOperator Type, allows users to extend QueryOperatorDelegate
  *            and add their own methods.
- * @param <I>
+ * @param <ROW_ID_TYPE>
  *            Type of the Row id (String, Integer, Long, etc.).
  */
-public class Where<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
+public class Where<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> implements Iterable<Row<ROW_ID_TYPE>> {
 
 	protected enum BOOL_EXP {
 		OR, AND
 	}
 
-	private Scanner<T, I> scanner;
+	private Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scanner;
 	private byte[] family;
 	private QueryContext context = new QueryContext();
 
-	Where(Scanner<T, I> scanner) {
+	Where(Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scanner) {
 		this.scanner = scanner;
 	}
 
-	public Where<T, I> family(String name) {
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> family(String name) {
 		family = Bytes.toBytes(name);
 		return this;
 	}
 
 	@SuppressWarnings("unchecked")
-	public T col(String name) {
-		return (T) scanner.createWhereClause(this, family, Bytes.toBytes(name));
+	public QUERY_OP_TYPE col(String name) {
+		return (QUERY_OP_TYPE) scanner.createWhereClause(this, family, Bytes.toBytes(name));
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class Where<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 	 * @param forEach
 	 *            the {@link ForEach} object provided to perform the processing.
 	 */
-	public void foreach(ForEach<Row<I>> forEach) {
+	public void foreach(ForEach<Row<ROW_ID_TYPE>> forEach) {
 		Filter filter = context.getResultingFilter();
 		scanner.setFilter(filter);
 		scanner.foreach(forEach);
@@ -77,7 +77,7 @@ public class Where<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 	 *            the user provided filter.
 	 * @return this.
 	 */
-	public Where<T, I> filter(Filter filter) {
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> filter(Filter filter) {
 		return addFilter(filter);
 	}
 
@@ -86,7 +86,7 @@ public class Where<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 	 * 
 	 * @return this.
 	 */
-	public Where<T, I> or() {
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> or() {
 		context.addBooleanExp(BOOL_EXP.OR);
 		return this;
 	}
@@ -96,7 +96,7 @@ public class Where<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 	 * 
 	 * @return this.
 	 */
-	public Where<T, I> and() {
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> and() {
 		context.addBooleanExp(BOOL_EXP.AND);
 		return this;
 	}
@@ -107,7 +107,7 @@ public class Where<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 	 * 
 	 * @return this.
 	 */
-	public Where<T, I> lp() {
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> lp() {
 		context.down();
 		return this;
 	}
@@ -118,7 +118,7 @@ public class Where<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 	 * 
 	 * @return this.
 	 */
-	public Where<T, I> rp() {
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> rp() {
 		context.up();
 		return this;
 	}
@@ -141,13 +141,13 @@ public class Where<T extends QueryOps<I>, I> implements Iterable<Row<I>> {
 	 *            the {@link Filter} to be added.
 	 * @return this object.
 	 */
-	protected Where<T, I> addFilter(Filter filter) {
+	protected Where<QUERY_OP_TYPE, ROW_ID_TYPE> addFilter(Filter filter) {
 		context.addFilter(filter);
 		return this;
 	}
 
 	@Override
-	public Iterator<Row<I>> iterator() {
+	public Iterator<Row<ROW_ID_TYPE>> iterator() {
 		return scanner.iterator();
 	}
 }
