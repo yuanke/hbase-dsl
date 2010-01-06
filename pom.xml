@@ -4,7 +4,7 @@
   <groupId>com.nearinfinity</groupId>
   <artifactId>hbase-dsl</artifactId>
   <packaging>jar</packaging>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1.1-SNAPSHOT</version>
   <name>hbase-dsl</name>
   <url>http://github.com/nearinfinity/hbase-dsl</url>
   
