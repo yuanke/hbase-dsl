@@ -35,7 +35,7 @@ public abstract class BaseTest {
 
 	@Before
 	public void setUp() throws IOException {
-		hBase = HBase.newHBaseWithStringIdType();
+		hBase = new HBase<QueryOps<String>, String>(String.class);
 		hBase.defineTable(TABLE).family(FAM_A).family(FAM_B);
 		hBase.truncateTable(TABLE);
 		hTable = new HTable(TABLE);

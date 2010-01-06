@@ -41,8 +41,7 @@ public class CustomQueryOperatorTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void myFuncMethod() throws IOException {
-//		hBase = new HBase<MyQueryOps<String>, String>((Class<? extends QueryOps<String>>) MyQueryOps.class, String.class);
-		hBase = HBase.newHBase(MyQueryOps.class, String.class);
+		hBase = new HBase(MyQueryOps.class, String.class);
 		hBase.defineTable(TABLE).family(FAM_A).family(FAM_B);
 		hBase.truncateTable(TABLE);
 		hTable = new HTable(TABLE);

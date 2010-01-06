@@ -58,54 +58,32 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	private static final int MAX_QUEUE_SIZE = 1024;
 	private Map<byte[], Queue<Put>> putsMap = new TreeMap<byte[], Queue<Put>>(Bytes.BYTES_COMPARATOR);
 	private Map<byte[], Queue<Delete>> deletesMap = new TreeMap<byte[], Queue<Delete>>(Bytes.BYTES_COMPARATOR);
-	private HBaseConfiguration conf = new HBaseConfiguration();
-	private HTablePool pool = new HTablePool(conf, 16);
+	private HBaseConfiguration conf;
+	private HTablePool pool;
 	private Class<?> whereClauseType;
 	private TypeDriver typeDriver = new TypeDriver().registerAllKnownTypes();
 	private Class<ROW_ID_TYPE> idType;
-
-	public HBase(Class<? extends QueryOps<ROW_ID_TYPE>> whereClauseType, Class<ROW_ID_TYPE> idType) {
+	
+	@SuppressWarnings("unchecked")
+	public HBase(Class<ROW_ID_TYPE> idType) {
+		this((Class<QUERY_OP_TYPE>) QueryOps.class,idType);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HBase(Class<ROW_ID_TYPE> idType, HBaseConfiguration conf) {
+		this((Class<QUERY_OP_TYPE>) QueryOps.class,idType, conf);
+	}
+	
+	protected HBase(Class<QUERY_OP_TYPE> whereClauseType, Class<ROW_ID_TYPE> idType) {
+		this(whereClauseType,idType, new HBaseConfiguration());
+	}
+	
+	protected HBase(Class<QUERY_OP_TYPE> whereClauseType, Class<ROW_ID_TYPE> idType, HBaseConfiguration conf) {
 		this.whereClauseType = whereClauseType;
 		this.idType = idType;
+		this.conf = conf;
+		this.pool = new HTablePool(conf, 16);
 		setupAutoFlushOnShutdown();
-	}
-
-	public static <U extends QueryOps<Y>, Y> HBase<U, Y> newHBase(Class<U> queryOpsClass, Class<Y> rowIdTypeClass) {
-		return new HBase<U, Y>(queryOpsClass, rowIdTypeClass);
-	}
-
-	public static <U extends QueryOps<String>> HBase<U, String> newHBaseWithStringIdType(Class<U> queryOpsClass) {
-		return newHBase(queryOpsClass, String.class);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static HBase<QueryOps<String>, String> newHBaseWithStringIdType() {
-		return newHBase(QueryOps.class, String.class);
-	}
-
-	/**
-	 * Creates a {@link HBase} object with basic {@link QueryOps} class.
-	 * 
-	 * @param <Y>
-	 *            the type of the row id.
-	 * @param t
-	 *            the class type of the row id.
-	 * @return the {@link HBase} instance.
-	 */
-	@SuppressWarnings("unchecked")
-	public static <Y> HBase<QueryOps<Y>, Y> newHBase(Class<Y> t) {
-		return newHBase(QueryOps.class, t);
-	}
-
-	/**
-	 * Creates a {@link HBase} object with basic {@link QueryOps} class and
-	 * String class as the row id type.
-	 * 
-	 * @return the {@link HBase} instance.
-	 */
-	@SuppressWarnings("unchecked")
-	public static HBase<QueryOps<String>, String> newHBase() {
-		return newHBase(QueryOps.class, String.class);
 	}
 
 	/**
@@ -252,7 +230,12 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	public <U> void registerTypeConverter(TypeConverter<U> typeConverter) {
 		typeDriver.registerType(typeConverter);
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	public static <TYPE> Table<QueryOps<TYPE>, TYPE> table(final String tableName, HBaseConfiguration conf, Class<TYPE> type) {
+		return new HBase(type,conf).table(tableName);
+	}
+	
 	public Table<QUERY_OP_TYPE, ROW_ID_TYPE> table(final String tableName) {
 		return new Table<QUERY_OP_TYPE,ROW_ID_TYPE>() {
 
@@ -410,4 +393,9 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 			}
 		}));
 	}
-}
+
+	@Override
+	protected void finalize() throws Throwable {
+		flush();
+	}
+}	
