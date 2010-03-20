@@ -41,6 +41,7 @@ public interface Row<ROW_ID_TYPE> {
 	 * @return the family of columns.
 	 */
 	Family family(String family);
+	Family family(byte[] family);
 
 	/**
 	 * Gets the value form the given column and converts the byte array for the
@@ -57,6 +58,7 @@ public interface Row<ROW_ID_TYPE> {
 	 * @return the newly converted value.
 	 */
 	<U> U value(String family, String qualifier, Class<U> c);
+	<U> U value(byte[] family, byte[] qualifier, Class<U> c);
 
 	/**
 	 * Gets the values (all versions) from a single column and converts the byte
@@ -74,6 +76,7 @@ public interface Row<ROW_ID_TYPE> {
 	 *         of updates.
 	 */
 	<U> NavigableMap<Long, U> values(String family, String qualifier, Class<U> c);
+	<U> NavigableMap<Long, U> values(byte[] family, byte[] qualifier, Class<U> c);
 
 	/**
 	 * Gets the values (all versions) from a single column and converts the byte
@@ -91,6 +94,7 @@ public interface Row<ROW_ID_TYPE> {
 	 *         sorted ascending by the time stamps of updates.
 	 */
 	<U> List<U> valuesAscTimestamp(String family, String qualifier, Class<U> c);
+	<U> List<U> valuesAscTimestamp(byte[] family, byte[] qualifier, Class<U> c);
 
 	/**
 	 * Gets the values (all versions) from a single column and converts the byte
@@ -108,4 +112,5 @@ public interface Row<ROW_ID_TYPE> {
 	 *         sorted descending by the time stamps of updates.
 	 */
 	<U> List<U> valuesDescTimestamp(String family, String qualifier, Class<U> c);
+	<U> List<U> valuesDescTimestamp(byte[] family, byte[] qualifier, Class<U> c);
 }

@@ -57,29 +57,32 @@ public class TableAdmin {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	public FamilyAdmin family(String name) {
-		byte[] familyName = Bytes.toBytes(name);
+		return family(Bytes.toBytes(name));
+	}
+
+	public FamilyAdmin family(byte[] name) {
 		try {
 			desc = admin.getTableDescriptor(tableName);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		if (desc.getFamiliesKeys().contains(familyName)) {
+		if (desc.getFamiliesKeys().contains(name)) {
 			LOG.info("family [" + name + "] already exists");
-			return new FamilyAdmin(this, admin, tableName, desc, familyName);
+			return new FamilyAdmin(this, admin, tableName, desc, name);
 		}
 		try {
-			LOG.info("Adding family [" + Bytes.toString(familyName) + "] to table [" + Bytes.toString(tableName) + "]");
+			LOG.info("Adding family [" + Bytes.toString(name) + "] to table [" + Bytes.toString(tableName) + "]");
 			admin.disableTable(tableName);
-			HColumnDescriptor family = new HColumnDescriptor(familyName);
+			HColumnDescriptor family = new HColumnDescriptor(name);
 			desc.addFamily(family);
 			admin.modifyTable(tableName, desc);
 			admin.enableTable(tableName);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		return new FamilyAdmin(this, admin, tableName, desc, familyName);
+		return new FamilyAdmin(this, admin, tableName, desc, name);
 	}
 
 	public static class FamilyAdmin {
@@ -102,6 +105,10 @@ public class TableAdmin {
 			return tableAdmin.family(name);
 		}
 
+		public FamilyAdmin family(byte[] name) {
+			return tableAdmin.family(name);
+		}
+		
 		public FamilyAdmin inMemory() {
 			HColumnDescriptor columnDescriptor = desc.getFamily(familyName);
 			if (!columnDescriptor.isInMemory()) {

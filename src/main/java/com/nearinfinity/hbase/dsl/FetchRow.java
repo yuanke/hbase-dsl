@@ -60,13 +60,21 @@ public class FetchRow<ROW_ID_TYPE> {
 	}
 
 	public FetchRow<ROW_ID_TYPE> family(String family) {
-		currentFamily = Bytes.toBytes(family);
+		return family(Bytes.toBytes(family));
+	}
+	
+	public FetchRow<ROW_ID_TYPE> family(byte[] family) {
+		currentFamily = family;
 		get.addFamily(currentFamily);
 		return this;
 	}
 
 	public FetchRow<ROW_ID_TYPE> col(String name) {
-		get.addColumn(currentFamily, Bytes.toBytes(name));
+		return col(Bytes.toBytes(name));
+	}
+	
+	public FetchRow<ROW_ID_TYPE> col(byte[] name) {
+		get.addColumn(currentFamily, name);
 		return this;
 	}
 

@@ -70,50 +70,50 @@ public class SaveRow<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 		}
 
 		public SaveFamilyCol<T, I> family(String name) {
-			currentFamily = Bytes.toBytes(name);
-			return this;
+			return family(Bytes.toBytes(name));
 		}
-
-		public SaveFamilyCol<T, I> col(String qualifier, Object o) {
-			if (o == null) {
-				return this;
-			}
-			if (currentFamily == null) {
-				throw new RuntimeException("not implemented");
-			} else {
-				put.add(currentFamily, Bytes.toBytes(qualifier), hBase.toBytes(o));
-			}
+		
+		public SaveFamilyCol<T, I> family(byte[] name) {
+			currentFamily = name;
 			return this;
 		}
 		
+		public SaveFamilyCol<T, I> col(String qualifier, Object o) {
+			return col(Bytes.toBytes(qualifier),o);
+		}
+
+		public SaveFamilyCol<T, I> col(byte[] qualifier, Object o) {
+			return col(qualifier,o,(Long)null);
+		}
+		
 		public SaveFamilyCol<T, I> col(String qualifier, Object o, Long timestamp) {
+			return col(Bytes.toBytes(qualifier),o,timestamp);
+		}
+		
+		public SaveFamilyCol<T, I> col(byte[] qualifier, Object o, Long timestamp) {
+			if (currentFamily == null) {
+				throw new RuntimeException("not implemented");
+			}
 			if (o == null) {
 				return this;
 			}
 			if (timestamp == null) {
-				return col(qualifier,o);
-			}
-			if (currentFamily == null) {
-				throw new RuntimeException("not implemented");
+				put.add(currentFamily, qualifier, hBase.toBytes(o));
 			} else {
-				put.add(currentFamily, Bytes.toBytes(qualifier), timestamp, hBase.toBytes(o));
+				put.add(currentFamily, qualifier, timestamp, hBase.toBytes(o));
 			}
 			return this;
 		}
 		
 		public SaveFamilyCol<T, I> col(String qualifier, Object o, Date timestamp) {
-			if (o == null) {
-				return this;
-			}
+			return col(Bytes.toBytes(qualifier),o,timestamp);
+		}
+		
+		public SaveFamilyCol<T, I> col(byte[] qualifier, Object o, Date timestamp) {
 			if (timestamp == null) {
 				return col(qualifier,o);
 			}
-			if (currentFamily == null) {
-				throw new RuntimeException("not implemented");
-			} else {
-				put.add(currentFamily, Bytes.toBytes(qualifier), timestamp.getTime(), hBase.toBytes(o));
-			}
-			return this;
+			return col(qualifier,o,timestamp.getTime());
 		}
 
 		public SaveFamilyCol<T, I> row(I id) {

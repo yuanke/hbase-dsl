@@ -39,6 +39,7 @@ public interface Family {
 	 * @return the newly converted value.
 	 */
 	<U> U value(String qualifier, Class<U> c);
+	<U> U value(byte[] qualifier, Class<U> c);
 
 	/**
 	 * Gets the values (all versions) from a single column and converts the byte
@@ -54,6 +55,7 @@ public interface Family {
 	 *         of updates.
 	 */
 	<U> NavigableMap<Long, U> values(String qualifier, Class<U> c);
+	<U> NavigableMap<Long, U> values(byte[] qualifier, Class<U> c);
 
 	/**
 	 * Gets the values (all versions) from a single column and converts the byte
@@ -69,6 +71,7 @@ public interface Family {
 	 *         sorted ascending by the time stamps of updates.
 	 */
 	<U> List<U> valuesAscTimestamp(String qualifier, Class<U> c);
+	<U> List<U> valuesAscTimestamp(byte[] qualifier, Class<U> c);
 
 	/**
 	 * Gets the values (all versions) from a single column and converts the byte
@@ -84,4 +87,5 @@ public interface Family {
 	 *         sorted descending by the time stamps of updates.
 	 */
 	<U> List<U> valuesDescTimestamp(String qualifier, Class<U> c);
+	<U> List<U> valuesDescTimestamp(byte[] qualifier, Class<U> c);
 }

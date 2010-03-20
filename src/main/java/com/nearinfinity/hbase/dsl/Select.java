@@ -47,13 +47,21 @@ public class Select<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> im
 	}
 
 	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> family(String name) {
-		family = Bytes.toBytes(name);
-		scanner.addFamily(family);
-		return this;
+		return family(Bytes.toBytes(name));
 	}
 
 	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> col(String name) {
-		scanner.addColumn(family, Bytes.toBytes(name));
+		return col(Bytes.toBytes(name));
+	}
+	
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> family(byte[] name) {
+		family = name;
+		scanner.addFamily(name);
+		return this;
+	}
+
+	public Select<QUERY_OP_TYPE, ROW_ID_TYPE> col(byte[] name) {
+		scanner.addColumn(family, name);
 		return this;
 	}
 

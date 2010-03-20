@@ -48,13 +48,21 @@ public class Where<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> imp
 	}
 
 	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> family(String name) {
-		family = Bytes.toBytes(name);
+		return family(Bytes.toBytes(name));
+	}
+	
+	public Where<QUERY_OP_TYPE, ROW_ID_TYPE> family(byte[] name) {
+		family = name;
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	public QUERY_OP_TYPE col(String name) {
-		return (QUERY_OP_TYPE) scanner.createWhereClause(this, family, Bytes.toBytes(name));
+		return col(Bytes.toBytes(name));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public QUERY_OP_TYPE col(byte[] name) {
+		return (QUERY_OP_TYPE) scanner.createWhereClause(this, family, name);
 	}
 
 	/**
