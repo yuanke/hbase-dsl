@@ -110,8 +110,11 @@ public class DeletedRow<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE
 		}
 
 		public DeletedRowFamilyColumn<T, I> family(String name) {
-			byte[] family = Bytes.toBytes(name);
-			return new DeletedRowFamilyColumn<T, I>(hBase, tableName, family, delete, deleteRow);
+			return family(Bytes.toBytes(name));
+		}
+		
+		public DeletedRowFamilyColumn<T, I> family(byte[] name) {
+			return new DeletedRowFamilyColumn<T, I>(hBase, tableName, name, delete, deleteRow);
 		}
 
 		public DeletedRowFamily<T, I> row(I id) {
@@ -142,15 +145,22 @@ public class DeletedRow<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE
 		}
 
 		public DeletedRowFamilyColumn<T, I> family(String name) {
-			byte[] family = Bytes.toBytes(name);
-			return new DeletedRowFamilyColumn<T, I>(hBase, tableName, family, delete, deleteRow);
+			return family(Bytes.toBytes(name));
+		}
+		
+		public DeletedRowFamilyColumn<T, I> family(byte[] name) {
+			return new DeletedRowFamilyColumn<T, I>(hBase, tableName, name, delete, deleteRow);
 		}
 
 		public DeletedRowFamilyColumn<T, I> col(String name) {
+			return col(Bytes.toBytes(name));
+		}
+		
+		public DeletedRowFamilyColumn<T, I> col(byte[] name) {
 			if (currentFamily == null) {
 				throw new RuntimeException("not implemented");
 			} else {
-				delete.deleteColumn(currentFamily, Bytes.toBytes(name));
+				delete.deleteColumn(currentFamily, name);
 			}
 			return this;
 		}

@@ -41,9 +41,9 @@ public class FetchRow<ROW_ID_TYPE> {
 	private HBase<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> hBase;
 	private Result result;
 
-	FetchRow(HBase<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> hBase, String tableName) {
+	FetchRow(HBase<? extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> hBase, byte[] tableName) {
 		this.hBase = hBase;
-		this.tableName = Bytes.toBytes(tableName);
+		this.tableName = tableName;
 	}
 
 	public Row<ROW_ID_TYPE> row(ROW_ID_TYPE id) {

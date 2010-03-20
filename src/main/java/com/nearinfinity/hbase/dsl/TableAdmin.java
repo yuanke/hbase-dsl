@@ -43,8 +43,8 @@ public class TableAdmin {
 	private byte[] tableName;
 	private HTableDescriptor desc;
 
-	TableAdmin(String tableName) {
-		this.tableName = Bytes.toBytes(tableName);
+	TableAdmin(byte[] tableName) {
+		this.tableName = tableName;
 		try {
 			admin = new HBaseAdmin(new HBaseConfiguration());
 			if (!admin.tableExists(tableName)) {

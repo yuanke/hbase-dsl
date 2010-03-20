@@ -37,9 +37,9 @@ public class SaveRow<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	private HBase<QUERY_OP_TYPE, ROW_ID_TYPE> hBase;
 	private byte[] tableName;
 
-	SaveRow(HBase<QUERY_OP_TYPE, ROW_ID_TYPE> hBase, String tableName) {
+	SaveRow(HBase<QUERY_OP_TYPE, ROW_ID_TYPE> hBase, byte[] tableName) {
 		this.hBase = hBase;
-		this.tableName = Bytes.toBytes(tableName);
+		this.tableName = tableName;
 	}
 
 	public SaveFamilyCol<QUERY_OP_TYPE, ROW_ID_TYPE> row(ROW_ID_TYPE id) {

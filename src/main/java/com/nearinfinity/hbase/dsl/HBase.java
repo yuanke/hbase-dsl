@@ -93,27 +93,49 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	 *            the table name.
 	 */
 	public void truncateTable(final String tableName) {
+		truncateTable(Bytes.toBytes(tableName));
+	}
+	
+	/**
+	 * Truncates the given table.
+	 * 
+	 * @param tableName
+	 *            the table name.
+	 */
+	public void truncateTable(final byte[] tableName) {
 		scan(tableName).foreach(new ForEach<Row<ROW_ID_TYPE>>() {
 			@Override
 			public void process(Row<ROW_ID_TYPE> row) {
 				delete(tableName).row(row.getId());
 			}
 		});
-		flush(Bytes.toBytes(tableName));
+		flush(tableName);
 	}
 
 	public SaveRow<QUERY_OP_TYPE, ROW_ID_TYPE> save(String tableName) {
+		return save(Bytes.toBytes(tableName));
+	}
+	
+	public SaveRow<QUERY_OP_TYPE, ROW_ID_TYPE> save(byte[] tableName) {
 		LOG.debug("save [" + tableName + "]");
 		return new SaveRow<QUERY_OP_TYPE, ROW_ID_TYPE>(this, tableName);
 	}
 
 	public FetchRow<ROW_ID_TYPE> fetch(String tableName) {
+		return fetch(Bytes.toBytes(tableName));
+	}
+	
+	public FetchRow<ROW_ID_TYPE> fetch(byte[] tableName) {
 		flush();
 		LOG.debug("fetch [" + tableName + "]");
 		return new FetchRow<ROW_ID_TYPE>(this, tableName);
 	}
 
 	public TableAdmin defineTable(String tableName) {
+		return defineTable(Bytes.toBytes(tableName));
+	}
+	
+	public TableAdmin defineTable(byte[] tableName) {
 		flush();
 		LOG.debug("defineTable [" + tableName + "]");
 		return new TableAdmin(tableName);
@@ -129,6 +151,17 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(String tableName) {
 		return scan(tableName, null);
 	}
+	
+	/**
+	 * Creates a scanner for the given table.
+	 * 
+	 * @param tableName
+	 *            the table name.
+	 * @return the {@link Scanner}.
+	 */
+	public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(byte[] tableName) {
+		return scan(tableName, null);
+	}
 
 	/**
 	 * Creates a scanner for the given table with a starting id.
@@ -140,6 +173,19 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	 * @return the {@link Scanner}.
 	 */
 	public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(String tableName, ROW_ID_TYPE startId) {
+		return scan(tableName, startId, null);
+	}
+	
+	/**
+	 * Creates a scanner for the given table with a starting id.
+	 * 
+	 * @param tableName
+	 *            the table name.
+	 * @param startId
+	 *            the starting id.
+	 * @return the {@link Scanner}.
+	 */
+	public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(byte[] tableName, ROW_ID_TYPE startId) {
 		return scan(tableName, startId, null);
 	}
 
@@ -156,10 +202,26 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	 * @return the {@link Scanner}.
 	 */
 	public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(String tableName, ROW_ID_TYPE startId, ROW_ID_TYPE endId) {
+		return scan(Bytes.toBytes(tableName),startId,endId);
+	}
+	
+	/**
+	 * Creates a scanner for the given table with a starting id and an ending
+	 * id.
+	 * 
+	 * @param tableName
+	 *            the table name.
+	 * @param startId
+	 *            the starting id.
+	 * @param endId
+	 *            the ending id.
+	 * @return the {@link Scanner}.
+	 */
+	public Scanner<QUERY_OP_TYPE, ROW_ID_TYPE> scan(byte[] tableName, ROW_ID_TYPE startId, ROW_ID_TYPE endId) {
 		flush();
 		LOG.debug("scan [" + tableName + "] startId [" + startId + "] endId [" + endId + "]");
 		try {
-			HTable hTable = new HTable(conf, Bytes.toBytes(tableName));
+			HTable hTable = new HTable(conf, tableName);
 			return new Scanner<QUERY_OP_TYPE, ROW_ID_TYPE>(this, hTable, startId, endId);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -173,13 +235,22 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	 *            the table name.
 	 */
 	public void removeTable(String tableName) {
+		removeTable(Bytes.toBytes(tableName));
+	}
+	
+	/**
+	 * Removes the table.
+	 * 
+	 * @param tableName
+	 *            the table name.
+	 */
+	public void removeTable(byte[] tableName) {
 		flush();
 		LOG.debug("removeTable [" + tableName + "]");
 		try {
 			HBaseAdmin hBaseAdmin = new HBaseAdmin(conf);
-			byte[] tableNameBytes = Bytes.toBytes(tableName);
-			hBaseAdmin.disableTable(tableNameBytes);
-			hBaseAdmin.deleteTable(tableNameBytes);
+			hBaseAdmin.disableTable(tableName);
+			hBaseAdmin.deleteTable(tableName);
 		} catch (TableNotFoundException e) {
 			LOG.error("Table [" + tableName + "] does not exist.");
 		} catch (Exception e) {
@@ -215,8 +286,19 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	 * @return the {@link DeletedRow}.
 	 */
 	public DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE> delete(String tableName) {
+		return delete(Bytes.toBytes(tableName));
+	}
+	
+	/**
+	 * Creates a {@link DeletedRow} object for the given table.
+	 * 
+	 * @param tableName
+	 *            the table name.
+	 * @return the {@link DeletedRow}.
+	 */
+	public DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE> delete(byte[] tableName) {
 		LOG.debug("delete [" + tableName + "]");
-		return new DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE>(this, Bytes.toBytes(tableName));
+		return new DeletedRow<QUERY_OP_TYPE, ROW_ID_TYPE>(this, tableName);
 	}
 
 	/**
@@ -237,6 +319,10 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	}
 	
 	public Table<QUERY_OP_TYPE, ROW_ID_TYPE> table(final String tableName) {
+		return table(Bytes.toBytes(tableName));
+	}
+	
+	public Table<QUERY_OP_TYPE, ROW_ID_TYPE> table(final byte[] tableName) {
 		return new Table<QUERY_OP_TYPE,ROW_ID_TYPE>() {
 
 			@Override
@@ -271,7 +357,7 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 		};
 	}
 
-	protected void flush(byte[] tableName) {
+	public void flush(byte[] tableName) {
 		LOG.debug("flush [" + tableName + "]");
 		Queue<Put> puts = getPuts(tableName);
 		if (puts != null) {
