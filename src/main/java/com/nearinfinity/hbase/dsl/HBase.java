@@ -66,12 +66,12 @@ public class HBase<QUERY_OP_TYPE extends QueryOps<ROW_ID_TYPE>, ROW_ID_TYPE> {
 	
 	@SuppressWarnings("unchecked")
 	public HBase(Class<ROW_ID_TYPE> idType) {
-		this((Class<QUERY_OP_TYPE>) QueryOps.class,idType);
+		this((Class<QUERY_OP_TYPE>)(Class) QueryOps.class,idType);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public HBase(Class<ROW_ID_TYPE> idType, HBaseConfiguration conf) {
-		this((Class<QUERY_OP_TYPE>) QueryOps.class,idType, conf);
+		this((Class<QUERY_OP_TYPE>)(Class) QueryOps.class,idType, conf);
 	}
 	
 	protected HBase(Class<QUERY_OP_TYPE> whereClauseType, Class<ROW_ID_TYPE> idType) {
